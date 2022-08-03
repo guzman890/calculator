@@ -17,9 +17,9 @@ app = FastAPI()
 
 @app.get("/")
 def hello():
-    return {"message":"Hello TutLinks.com"}
+    return {"message":"Hello World"}
 
-@app.post("/calculo")
+@app.post("/calculo/columna")
 def create_item(item: CalculoPrimerPiso):
 
     LongTotal = item.Long1+item.Long2+item.Long3+item.Long4+item.Long5
@@ -49,5 +49,48 @@ def create_item(item: CalculoPrimerPiso):
         "f1Bar": f1Bar,
         "f2Bar": f2Bar,
         "f3Bar": f3Bar}
+
+    return result
+
+@app.post("/calculo/zapata")
+def create_item(item: CalculoPrimerPiso):
+
+    longParrilla = item.Long1-(item.Long3*2)
+    widthParrilla = item.Long2-(item.Long3*2)
+    separacionOptimizadaL = longParrilla/cantidadPiezasL
+    separacionOptimizadaA = widthParrilla/cantidadPiezasL
+
+    piezasL = longParrilla+(item.Long5*2)
+    piezasA = widthParrilla+(item.Long5*2)
+    cantidadPiezasL = round(longParrilla/item.Long4)
+    cantidadPiezasA = round(widthParrilla/item.Long4)
+    cantidadPiezasLTotal = cantidadPiezasL*item.cant
+    cantidadPiezasATotal = cantidadPiezasA*item.cant
+
+    result = {
+        "longParrilla": longParrilla,
+        "widthParrilla": widthParrilla,
+        "separacionOptimizadaL": separacionOptimizadaL,
+        "separacionOptimizadaA": separacionOptimizadaA,
+        "piezasL": piezasL,
+        "piezasA": piezasA,
+        "cantidadPiezasL": cantidadPiezasL,
+        "cantidadPiezasA": cantidadPiezasA,
+        "cantidadPiezasLTotal": cantidadPiezasLTotal,
+        "cantidadPiezasATotal": cantidadPiezasATotal}
+
+    return result
+
+@app.post("/calculo/viga")
+def create_item(item: CalculoPrimerPiso):
+    
+    longWoEmpalme = item.Long4-(item.Long1*2)+(item.Long2*2)
+    empalmeNeeded = 1 if longWoEmpalme>9 else 0
+    longPiezaTotal = longWoEmpalme+(empalmeNeeded*item.Long3)
+
+    result = {
+        "longWoEmpalme": longWoEmpalme,
+        "empalmeNeeded": empalmeNeeded,
+        "longPiezaTotal": longPiezaTotal}
 
     return result
