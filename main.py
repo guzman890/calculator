@@ -57,13 +57,17 @@ def zapata_item(item: CalculoPrimerPiso):
 
     longParrilla = item.Long1-(item.Long3*2)
     widthParrilla = item.Long2-(item.Long3*2)
-    separacionOptimizadaL = longParrilla/cantidadPiezasL
-    separacionOptimizadaA = widthParrilla/cantidadPiezasL
 
     piezasL = longParrilla+(item.Long5*2)
     piezasA = widthParrilla+(item.Long5*2)
     cantidadPiezasL = round(longParrilla/item.Long4)
+
+    separacionOptimizadaL = longParrilla/cantidadPiezasL
+
     cantidadPiezasA = round(widthParrilla/item.Long4)
+
+    separacionOptimizadaA = widthParrilla/cantidadPiezasA
+
     cantidadPiezasLTotal = cantidadPiezasL*item.cant
     cantidadPiezasATotal = cantidadPiezasA*item.cant
 
