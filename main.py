@@ -20,7 +20,7 @@ def hello():
     return {"message":"Hello World"}
 
 @app.post("/calculo/columna")
-def create_item(item: CalculoPrimerPiso):
+def columna_item(item: CalculoPrimerPiso):
 
     LongTotal = item.Long1+item.Long2+item.Long3+item.Long4+item.Long5
 
@@ -53,7 +53,7 @@ def create_item(item: CalculoPrimerPiso):
     return result
 
 @app.post("/calculo/zapata")
-def create_item(item: CalculoPrimerPiso):
+def zapata_item(item: CalculoPrimerPiso):
 
     longParrilla = item.Long1-(item.Long3*2)
     widthParrilla = item.Long2-(item.Long3*2)
@@ -82,7 +82,7 @@ def create_item(item: CalculoPrimerPiso):
     return result
 
 @app.post("/calculo/viga")
-def create_item(item: CalculoPrimerPiso):
+def viga_item(item: CalculoPrimerPiso):
     
     longWoEmpalme = item.Long4-(item.Long1*2)+(item.Long2*2)
     empalmeNeeded = 1 if longWoEmpalme>9 else 0
