@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from typing import List
 
 class CalculoPrimerPiso(BaseModel):
     cant: int
@@ -11,7 +12,6 @@ class CalculoPrimerPiso(BaseModel):
     Long3: float
     Long4: float
     Long5: float
-
 
 app = FastAPI()
 
@@ -85,16 +85,73 @@ def zapata_item(item: CalculoPrimerPiso):
 
     return result
 
+class seccion(BaseModel):
+    Long: float
+    Cant: int
+
+class vigaPrimerPiso(BaseModel):
+    fe1: float
+    fe2: float
+    recubriemiento: float
+    gancho: float
+    empalme: float
+    secciones: List[seccion] = []
+
 @app.post("/calculo/viga")
-def viga_item(item: CalculoPrimerPiso):
-    
-    longWoEmpalme = item.Long4-(item.Long1*2)+(item.Long2*2)
-    empalmeNeeded = 1 if longWoEmpalme>9 else 0
-    longPiezaTotal = longWoEmpalme+(empalmeNeeded*item.Long3)
+def viga_item(item: vigaPrimerPiso):
+    result = []
+    for secc in item.secciones:
+        longWoEmpalme = secc.Long-(item.recubriemiento*2)+(item.gancho*2)
+        empalmeNeeded = 1 if longWoEmpalme>9 else 0
+        longPiezaTotal = longWoEmpalme+(empalmeNeeded*item.empalme)
+        result.append(
+            {
+            "longWoEmpalme": longWoEmpalme,
+            "empalmeNeeded": empalmeNeeded,
+            "longPiezaTotal": longPiezaTotal
+            }
+        )
+    return result
 
-    result = {
-        "longWoEmpalme": longWoEmpalme,
-        "empalmeNeeded": empalmeNeeded,
-        "longPiezaTotal": longPiezaTotal}
+class distribucion(BaseModel): 
+    cantidad: int
+    separacion: float
 
+class estriboPrimerPiso(BaseModel):
+    ancho: float
+    alto: float
+    recubriemiento: float
+    gancho: float
+    secciones: List[seccion] = []
+    distribuciones: List[distribucion] = []
+
+@app.post("/calculo/estribo")
+def estribos_item(item: estriboPrimerPiso):
+    result = []
+
+    piezaEstribo = (2*(item.ancho-(2*item.recubriemiento)))+(2*(item.alto-(2*item.recubriemiento)))+(2*item.gancho)
+    print(piezaEstribo)
+    estribosMedida = 0 
+
+    resto = 0
+    cantidadEstribos = 0
+    for distri in item.distribuciones:
+        estribosMedida += 2*(distri.cantidad*distri.separacion)
+        resto = distri.separacion if distri.separacion>0 else resto
+        cantidadEstribos += distri.cantidad
+    print(estribosMedida)
+
+    for secc in item.secciones:
+        espacioIntermedio = secc.Long-estribosMedida
+        estribosIntermedios = round((espacioIntermedio/resto)-1)
+        totalEstribos = (2*(cantidadEstribos)) + estribosIntermedios
+        longitudTotalEstribos = totalEstribos*piezaEstribo
+        result.append(
+            {
+            "espacioIntermedio": espacioIntermedio,
+            "estribosIntermedios": estribosIntermedios,
+            "totalEstribos": totalEstribos,
+            "longitudTotalEstribos": longitudTotalEstribos
+            }
+        )
     return result
