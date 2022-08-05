@@ -1,17 +1,18 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
+
 
 class CalculoPrimerPiso(BaseModel):
-    cant: int
-    Fe1: int
-    Fe2: int
-    Fe3: int
-    Long1: float
-    Long2: float
-    Long3: float
-    Long4: float
-    Long5: float
+    cant: Optional[int]
+    Fe1: Optional[int]
+    Fe2: Optional[int]
+    Fe3: Optional[int]
+    Long1: Optional[float]
+    Long2: Optional[float]
+    Long3: Optional[float]
+    Long4: Optional[float]
+    Long5: Optional[float]
 
 app = FastAPI()
 
@@ -156,6 +157,53 @@ def estribos_item(item: estriboPrimerPiso):
         "detalle" : detalle
     }    
     return result
+
+class OneItem(BaseModel):
+    tipo: str
+    cantidadRepeticiones: int
+    acero1Tipo: str
+    acero1Cantidad: int
+    acero2Tipo: str
+    acero2Cantidad: int
+    m1: float
+    m2: float
+    m3: float
+    m4: float
+    m5: float
+
+@app.post("/calculo/one")
+def oneCalculo(item: OneItem):
+    if item.tipo == 'columna':
+        columna = CalculoPrimerPiso()
+        columna.cant = item.cantidadRepeticiones
+        columna.Fe1 = item.acero1Cantidad
+        columna.Fe2 = item.acero2Cantidad
+        columna.Fe3 = 0
+        columna.Long1 = item.m1
+        columna.Long2 = item.m2
+        columna.Long3 = item.m3
+        columna.Long4 = item.m4
+        columna.Long5 = item.m5
+
+        return columna_item(columna)
+
+    if item.tipo == 'zapata':
+        zapata = CalculoPrimerPiso()
+        zapata.cant = item.cantidadRepeticiones
+        zapata.Fe1 = item.acero1Cantidad
+        zapata.Fe2 = 0
+        zapata.Fe3 = 0
+        zapata.Long1 = item.m1
+        zapata.Long2 = item.m2
+        zapata.Long3 = item.m3
+        zapata.Long4 = item.m4
+        zapata.Long5 = item.m5
+
+        return zapata_item(zapata)
+        
+    return []
+
+
 
 class calculoAll(BaseModel):
     columna: List[CalculoPrimerPiso] = []
