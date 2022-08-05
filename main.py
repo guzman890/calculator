@@ -127,7 +127,7 @@ class estriboPrimerPiso(BaseModel):
 
 @app.post("/calculo/estribo")
 def estribos_item(item: estriboPrimerPiso):
-    result = []
+    detalle = []
 
     piezaEstribo = (2*(item.ancho-(2*item.recubriemiento)))+(2*(item.alto-(2*item.recubriemiento)))+(2*item.gancho)
     print(piezaEstribo)
@@ -146,7 +146,7 @@ def estribos_item(item: estriboPrimerPiso):
         estribosIntermedios = round((espacioIntermedio/resto)-1)
         totalEstribos = (2*(cantidadEstribos)) + estribosIntermedios
         longitudTotalEstribos = totalEstribos*piezaEstribo
-        result.append(
+        detalle.append(
             {
             "espacioIntermedio": espacioIntermedio,
             "estribosIntermedios": estribosIntermedios,
@@ -154,4 +154,9 @@ def estribos_item(item: estriboPrimerPiso):
             "longitudTotalEstribos": longitudTotalEstribos
             }
         )
+
+    result ={
+        "piezaEstribo" : piezaEstribo,
+        "detalle" : detalle
+    }    
     return result
