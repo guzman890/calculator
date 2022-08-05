@@ -159,6 +159,9 @@ def estribos_item(item: estriboPrimerPiso):
     return result
 
 class OneItem(BaseModel):
+    user : str
+    cotizacion: str
+    ibobjecto: str
     tipo: str
     cantidadRepeticiones: int
     acero1Tipo: str
@@ -170,7 +173,6 @@ class OneItem(BaseModel):
     m3: float
     m4: float
     m5: float
-
 
 @app.post("/calculo/one")
 def oneCalculo(item: OneItem):
@@ -233,8 +235,6 @@ def oneCalculo(item: OneItem):
         }
 
     return result
-
-
 
 class calculoAll(BaseModel):
     columna: List[CalculoPrimerPiso] = []
