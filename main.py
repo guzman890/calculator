@@ -171,8 +171,10 @@ class OneItem(BaseModel):
     m4: float
     m5: float
 
+
 @app.post("/calculo/one")
 def oneCalculo(item: OneItem):
+    resultr = {}
     if item.tipo == 'columna':
         columna = CalculoPrimerPiso()
         columna.cant = item.cantidadRepeticiones
@@ -185,7 +187,21 @@ def oneCalculo(item: OneItem):
         columna.Long4 = item.m4
         columna.Long5 = item.m5
 
-        return columna_item(columna)
+        preResult = columna_item(columna)
+        result = {
+            "Fe1Long1" : preResult["LongTotal"],
+            "Fe2Long1" : preResult["LongTotal"],
+            "Fe3Long1" : preResult["LongTotal"],
+            "Fe1Long2" : 0,
+            "Fe2Long2" : 0,
+            "Fe3Long2" : 0,
+            "Fe1Long1Cantidad" : preResult["f1Bar"],
+            "Fe2Long1Cantidad" : preResult["f2Bar"],
+            "Fe3Long1Cantidad" : preResult["f3Bar"],
+            "Fe1Long2Cantidad" : 0,
+            "Fe2Long2Cantidad" : 0,
+            "Fe3Long2Cantidad" : 0
+        }
 
     if item.tipo == 'zapata':
         zapata = CalculoPrimerPiso()
@@ -199,9 +215,24 @@ def oneCalculo(item: OneItem):
         zapata.Long4 = item.m4
         zapata.Long5 = item.m5
 
-        return zapata_item(zapata)
-        
-    return []
+        preResult = zapata_item(zapata)
+
+        result = {
+            "Fe1Long1" : preResult["piezasL"],
+            "Fe2Long1" : 0,
+            "Fe3Long1" : 0,
+            "Fe1Long2" : preResult["piezasA"],
+            "Fe2Long2" : 0,
+            "Fe3Long2" : 0,
+            "Fe1Long1Cantidad" : preResult["cantidadPiezasLTotal"],
+            "Fe2Long1Cantidad" : 0,
+            "Fe3Long1Cantidad" : 0,
+            "Fe1Long2Cantidad" : preResult["cantidadPiezasATotal"],
+            "Fe2Long2Cantidad" : 0,
+            "Fe3Long2Cantidad" : 0
+        }
+
+    return result
 
 
 
