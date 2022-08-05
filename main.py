@@ -15,10 +15,6 @@ class CalculoPrimerPiso(BaseModel):
 
 app = FastAPI()
 
-@app.get("/")
-def hello():
-    return {"message":"Hello World"}
-
 @app.post("/calculo/columna")
 def columna_item(item: CalculoPrimerPiso):
 
@@ -159,4 +155,37 @@ def estribos_item(item: estriboPrimerPiso):
         "piezaEstribo" : piezaEstribo,
         "detalle" : detalle
     }    
+    return result
+
+class calculoAll(BaseModel):
+    columna: List[CalculoPrimerPiso] = []
+    zapata: List[CalculoPrimerPiso] = []
+    viga: List[vigaPrimerPiso] = []
+    estribo: List[estriboPrimerPiso] = [] 
+
+@app.post("/calculo/all")
+def allCalculos(allItems: calculoAll):
+    resultadoColumna = []
+    for columna in allItems.columna:
+        resultadoColumna.append( columna_item(columna) )
+
+    resultadoZapata = []
+    for zapata in allItems.zapata:
+        resultadoZapata.append( zapata_item(zapata) )
+
+    resultadoViga = []
+    for viga in allItems.viga:
+        resultadoViga.append( viga_item(viga) )    
+
+    resultadoEstribo = []
+    for estribo in allItems.estribo:
+        resultadoEstribo.append( estribos_item(estribo) )    
+
+    result = {
+        "columnas" : resultadoColumna,
+        "zapata" : resultadoZapata,
+        "viga" : resultadoViga,
+        "estribo" : resultadoEstribo
+    }   
+
     return result
