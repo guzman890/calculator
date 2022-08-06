@@ -242,6 +242,14 @@ class calculoAll(BaseModel):
     viga: List[vigaPrimerPiso] = []
     estribo: List[estriboPrimerPiso] = [] 
 
+class OptimoItem(BaseModel):
+    user : str
+    cotizacion: str
+
+@app.post("/calculo/optimo")
+def optimoCalculos(OptiItem: OptimoItem):
+    return OptiItem
+    
 @app.post("/calculo/all")
 def allCalculos(allItems: calculoAll):
     resultadoColumna = []
