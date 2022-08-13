@@ -8,10 +8,10 @@ import requests
 url = 'https://main--astounding-scone-dc5764.netlify.app/.netlify/functions/api/cortes'
 
 mydb = mysql.connector.connect(
-  host="localhost",
-  user="root",
-  password="root",
-  database="db_test"
+  host="us-cdbr-east-06.cleardb.net",
+  user="b4e424b4b99427",
+  password="38e4fa1e",
+  database="heroku_53bca6670a7f92f"
 )
 
 mycursor = mydb.cursor()
@@ -350,7 +350,6 @@ def optimoCalculos(OptiItem: OptimoItem):
             "cantidad" :apiResponse.get("numberOfMaterial"),
             "fierro" : keytabla
         })
-
 
     return resultFinal
     
