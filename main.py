@@ -348,7 +348,8 @@ def optimoCalculos(OptiItem: OptimoItem):
         resultFinal.append({
 
             "cantidad" :apiResponse.get("numberOfMaterial"),
-            "fierro" : keytabla
+            "fierro" : keytabla,
+            "cortes" : apiResponse.get("listOfCutsFinal")
         })
 
     return resultFinal
