@@ -8,10 +8,10 @@ import requests
 url = 'https://main--astounding-scone-dc5764.netlify.app/.netlify/functions/api/cortes'
 
 mydb = mysql.connector.connect(
-  host="us-cdbr-east-06.cleardb.net",
-  user="b4e424b4b99427",
-  password="38e4fa1e",
-  database="heroku_53bca6670a7f92f"
+  host="t07cxyau6qg7o5nz.cbetxkdyhwsb.us-east-1.rds.amazonaws.com",
+  user="hjrsm3o5ntv2zaqp",
+  password="rhqknldvk1o8luoy",
+  database="g3i4dd7nd3sqo8m8"
 )
 
 mycursor = mydb.cursor()
