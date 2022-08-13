@@ -382,6 +382,17 @@ def allCalculos(allItems: calculoAll):
     return result
 
 def insertOneItem(item: OneItem, preResult):
+
+    sql = "SELECT * FROM oneitem WHERE ibobjecto ='"+item.ibobjecto+"';"
+    print(sql)
+    mycursor.execute(sql)
+
+    myresults = mycursor.fetchall()
+    if myresults != None:
+        sql = "DELETE FROM oneitem WHERE (`ibobjecto` = '"+item.ibobjecto+"');"
+        print(sql)
+        mycursor.execute(sql)
+
     sql = "INSERT INTO oneitem (user, cotizacion, ibobjecto, tipo, cantidadRepeticiones, acero1Tipo, acero1Cantidad, acero2Tipo, acero2Cantidad, m1, m2, m3, m4, m5, jsonRequest, jsonResponse) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
     val = ( 
         item.user,
