@@ -16,124 +16,157 @@ mydb = mysql.connector.connect(
 
 mycursor = mydb.cursor()
 
-class CalculoPrimerPiso(BaseModel):
+class Columna(BaseModel):
     cant: Optional[int]
     Fe1: Optional[int]
     Fe2: Optional[int]
-    Fe3: Optional[int]
+    FeE: Optional[int]
+    Long1: Optional[float]
+    Long2: Optional[float]
+    Long3: Optional[float]
+    Long4: Optional[float]
+    Long5: Optional[float]
+    Long6: Optional[float]
+    Long7: Optional[float]
+    Long8: Optional[float]
+    Long9: Optional[float]
+    e1C: Optional[int]
+    e2C: Optional[int]
+    e3C: Optional[int]
+    eResto: Optional[float]
+    e1S: Optional[float]
+    e2S: Optional[float]
+    e3S: Optional[float]
+    eRestoS: Optional[float]
+
+class Zapata(BaseModel):
+    cant: Optional[int]
+    Fe1: Optional[int]
     Long1: Optional[float]
     Long2: Optional[float]
     Long3: Optional[float]
     Long4: Optional[float]
     Long5: Optional[float]
 
-class seccion(BaseModel):
-    Long: float
-    Cant: int
+class Seccion(BaseModel):
+    sMeasure: float
+    sCant: int
 
-class vigaPrimerPiso(BaseModel):
-    fe1: float
-    fe2: float
-    recubriemiento: float
-    gancho: float
-    empalme: float
-    secciones: List[seccion] = []
+class Luz(BaseModel):
+    lz: Optional[float]
+    lzC: Optional[int]
 
-class distribucion(BaseModel): 
-    cantidad: int
-    separacion: float
+class Viga(BaseModel):
+    fe1: int
+    fe2: int
+    Long1: float
+    Long2: float
+    Long3: float
+    Long4: float
+    Long5: float
+    Long6: float
 
-class estriboPrimerPiso(BaseModel):
-    ancho: float
-    alto: float
-    recubriemiento: float
-    gancho: float
-    secciones: List[seccion] = []
-    distribuciones: List[distribucion] = []
+    secciones: List[Seccion] = []
+
+    e1C: Optional[int]
+    e2C: Optional[int]
+    e3C: Optional[int]
+    eResto: Optional[float]
+    e1S: Optional[float]
+    e2S: Optional[float]
+    e3S: Optional[float]
+    eRestoS: Optional[float]
+
+    luces: List[Luz] = []
 
 class OneItem(BaseModel):
     user : str
     cotizacion: str
     ibobjecto: str
-    tipo: str
-    cantidadRepeticiones: int
-    acero1Tipo: str
-    acero1Cantidad: int
-    acero2Tipo: str
-    acero2Cantidad: int
+    
     m1: float
     m2: float
     m3: float
     m4: float
     m5: float
+    m6: float
+    m7: float
+    m8: float
+    m9: float
 
-class calculoAll(BaseModel):
-    columna: List[CalculoPrimerPiso] = []
-    zapata: List[CalculoPrimerPiso] = []
-    viga: List[vigaPrimerPiso] = []
-    estribo: List[estriboPrimerPiso] = [] 
+    tipo: str
+    cantidadRepeticiones: int
+
+    acero1Tipo: str
+    acero1Cantidad: int
+
+    acero2Tipo: str
+    acero2Cantidad: int
+
+    aceroETipo: str
+    aceroECantidad: int
+
+    e1C: Optional[int]
+    e2C: Optional[int]
+    e3C: Optional[int]
+    eResto: str
+    e1S: Optional[float]
+    e2S: Optional[float]
+    e3S: Optional[float]
+    eRestoS: Optional[float]
+    
+    secciones: List[Seccion] = []
+
+    luces: List[Luz] = []
 
 class OptimoItem(BaseModel):
     user : str
     cotizacion: str
 
-class PzNItem(BaseModel):
-    PzNPartida: str
-    PzNMaterial: str
-    PzNMedida: int
-    PzNRepeticiones: float
-
-
 app = FastAPI()
 
 @app.post("/calculo/columna")
-def columna_item(item: CalculoPrimerPiso):
+def columna_item(item: Columna):
 
-    LongTotal = item.Long1+item.Long2+item.Long3+item.Long4+item.Long5
+    LargoAcero1 = item.Long3+item.Long4+item.Long5+item.Long6+item.Long7
+    LargoAcero2 = item.Long3+item.Long4+item.Long5+item.Long6+item.Long7
 
-    cantBarByDefault = int(9/LongTotal)
-    fe1CantByDefault = (item.Fe1*item.cant)/cantBarByDefault
-    fe2CantByDefault = (item.Fe2*item.cant)/cantBarByDefault
-    fe3CantByDefault = (item.Fe3*item.cant)/cantBarByDefault
+    cantidadAcero1Total = item.Fe1 * item.cant
+    cantidadAcero2Total = item.Fe2 * item.cant
 
-    feCantByDefault = fe1CantByDefault + fe2CantByDefault + fe3CantByDefault
+    LongEstribo = (2*(item.Long1-(2*item.Long9)))+(2*(item.Long2-(2*item.Long9)))+(2*item.Long8)
+    EspCubEstrMed = (2*((item.e1C*item.e1S)+(item.e2C*item.e2S)+(item.e3C*item.e3S)))
+    EspacioIntermedio = item.Long4-EspCubEstrMed
 
-    TotalBar = (item.Fe1 + item.Fe2 + item.Fe3)*item.cant
-    f1Bar = (item.Fe1)*item.cant
-    f2Bar = (item.Fe2)*item.cant
-    f3Bar = (item.Fe3)*item.cant
-
-    LongResi = 9-LongTotal*cantBarByDefault
+    EstribosIntermedios = round((EspacioIntermedio/item.eRestoS)-1)
+    TotalEstrColumna = (2*(item.e1C+item.e2C+item.e3C))+EstribosIntermedios
+    TotalEstrTotal = TotalEstrColumna*item.cant
 
     result = {
-        "TotalBar": TotalBar,
-        "feCantByDefault": feCantByDefault,
-        "fe1CantByDefault": fe1CantByDefault,
-        "fe2CantByDefault": fe2CantByDefault,
-        "fe3CantByDefault": fe3CantByDefault,
-        "LongTotal": LongTotal,
-        "LongResi": LongResi,
-        "f1Bar": f1Bar,
-        "f2Bar": f2Bar,
-        "f3Bar": f3Bar}
+        "LargoAcero1": LargoAcero1,
+        "LargoAcero2": LargoAcero2,
+        "cantidadAcero1Total": cantidadAcero1Total,
+        "cantidadAcero2Total": cantidadAcero2Total,
+        "LongEstribo": LongEstribo,
+        "EspCubEstrMed": EspCubEstrMed,
+        "EspacioIntermedio": EspacioIntermedio,
+        "TotalEstrColumna": TotalEstrColumna,
+        "TotalEstrTotal": TotalEstrTotal
+    }
 
     return result
 
 @app.post("/calculo/zapata")
-def zapata_item(item: CalculoPrimerPiso):
+def zapata_item(item: Zapata):
 
-    longParrilla = item.Long1-(item.Long3*2)
-    widthParrilla = item.Long2-(item.Long3*2)
+    longParrilla = item.Long1-(item.Long5*2)
+    widthParrilla = item.Long2-(item.Long5*2)
 
-    piezasL = longParrilla+(item.Long5*2)
-    piezasA = widthParrilla+(item.Long5*2)
-    cantidadPiezasL = round(longParrilla/item.Long4)
+    piezasL = longParrilla+(item.Long4*2)
+    piezasA = widthParrilla+(item.Long4*2)
+    cantidadPiezasL = round(longParrilla/item.Long3)
 
-    separacionOptimizadaL = longParrilla/cantidadPiezasL
-
-    cantidadPiezasA = round(widthParrilla/item.Long4)
-
-    separacionOptimizadaA = widthParrilla/cantidadPiezasA
+    cantidadPiezasA = round(widthParrilla/item.Long3)
 
     cantidadPiezasLTotal = cantidadPiezasL*item.cant
     cantidadPiezasATotal = cantidadPiezasA*item.cant
@@ -141,113 +174,101 @@ def zapata_item(item: CalculoPrimerPiso):
     result = {
         "longParrilla": longParrilla,
         "widthParrilla": widthParrilla,
-        "separacionOptimizadaL": separacionOptimizadaL,
-        "separacionOptimizadaA": separacionOptimizadaA,
         "piezasL": piezasL,
         "piezasA": piezasA,
         "cantidadPiezasL": cantidadPiezasL,
         "cantidadPiezasA": cantidadPiezasA,
         "cantidadPiezasLTotal": cantidadPiezasLTotal,
-        "cantidadPiezasATotal": cantidadPiezasATotal}
+        "cantidadPiezasATotal": cantidadPiezasATotal
+    }
 
     return result
 
 @app.post("/calculo/viga")
-def viga_item(item: vigaPrimerPiso):
-    result = []
-    for secc in item.secciones:
-        longWoEmpalme = secc.Long-(item.recubriemiento*2)+(item.gancho*2)
-        empalmeNeeded = 1 if longWoEmpalme>9 else 0
-        longPiezaTotal = longWoEmpalme+(empalmeNeeded*item.empalme)
-        result.append(
-            {
-            "longWoEmpalme": longWoEmpalme,
-            "empalmeNeeded": empalmeNeeded,
-            "longPiezaTotal": longPiezaTotal
-            }
-        )
-    return result
+def viga_item(item: Viga):
 
+    seccionRetorno =[]
 
-@app.post("/calculo/estribo")
-def estribos_item(item: estriboPrimerPiso):
-    detalle = []
+    for seccion in item.secciones:
+        sLong =(seccion.sMeasure-(item.Long6*2)+(2*item.Long3))
+        if (seccion.sMeasure-(item.Long6*2)+(2*item.Long3))>9 :
+            sLong += item.Long4
+        SFe1=item.fe1*seccion.sCant
+        SFe2=item.fe2*seccion.sCant
 
-    piezaEstribo = (2*(item.ancho-(2*item.recubriemiento)))+(2*(item.alto-(2*item.recubriemiento)))+(2*item.gancho)
-    print(piezaEstribo)
-    estribosMedida = 0 
+        seccionRetorno.append({
+            "sLong":sLong,
+            "SFe1":SFe1,
+            "SFe1":SFe2
+        })
 
-    resto = 0
-    cantidadEstribos = 0
-    for distri in item.distribuciones:
-        estribosMedida += 2*(distri.cantidad*distri.separacion)
-        resto = distri.separacion if distri.separacion>0 else resto
-        cantidadEstribos += distri.cantidad
-    print(estribosMedida)
+    EspCubEstrMedida = (2*((item.e1C*item.e1S)+(item.e2C*item.e2S)+(item.e3C*item.e3S)))
+    FeELong = (2*(item.Long1-(2*item.Long6)))+(2*(item.Long2-(2*item.Long6)))+(2*item.Long5)
+    TotalEstribos = 0
+    lucesRetorno =[]
+    for luz in item.luces:
+        estrLuz=(2*(item.e1C+item.e2C+item.e3C))+(round(((luz.lz-EspCubEstrMedida)/item.eRestoS)-1))
+        estrLuzCant = estrLuz*luz.lzC
+        TotalEstribos += estrLuzCant
 
-    for secc in item.secciones:
-        espacioIntermedio = secc.Long-estribosMedida
-        estribosIntermedios = round((espacioIntermedio/resto)-1)
-        totalEstribos = (2*(cantidadEstribos)) + estribosIntermedios
-        longitudTotalEstribos = totalEstribos*piezaEstribo
-        detalle.append(
-            {
-            "espacioIntermedio": espacioIntermedio,
-            "estribosIntermedios": estribosIntermedios,
-            "totalEstribos": totalEstribos,
-            "longitudTotalEstribos": longitudTotalEstribos
-            }
-        )
+        lucesRetorno.append({
+            "estrLuz":estrLuz,
+            "estrLuzCant":estrLuzCant
+        })
 
-    result ={
-        "piezaEstribo" : piezaEstribo,
-        "detalle" : detalle
-    }    
-    return result
+    return {
+        "seccion":seccionRetorno,
+        "EspCubEstrMedida":EspCubEstrMedida,
+        "FeELong":FeELong,
+        "lucesRetorno":lucesRetorno,
+        "TotalEstribos":TotalEstribos
+    }
 
 @app.post("/calculo/one")
 def oneCalculo(item: OneItem):
     result = {}
     if item.tipo == 'columna':
-        columna = CalculoPrimerPiso()
+        columna = Columna()
         columna.cant = item.cantidadRepeticiones
         columna.Fe1 = item.acero1Cantidad
         columna.Fe2 = item.acero2Cantidad
-        columna.Fe3 = 0
+        columna.FeE = item.aceroECantidad
         columna.Long1 = item.m1
         columna.Long2 = item.m2
         columna.Long3 = item.m3
         columna.Long4 = item.m4
         columna.Long5 = item.m5
-
+        columna.Long6 = item.m6
+        columna.Long7 = item.m7
+        columna.Long8 = item.m8
+        columna.Long9 = item.m9
+        
+        columna.e1C = item.e1C
+        columna.e2C = item.e2C
+        columna.e3C = item.e3C
+        columna.eResto = item.eResto
+        columna.e1S = item.e1S
+        columna.e2S = item.e2S
+        columna.e3S = item.e3S
+        columna.eRestoS = item.eRestoS
+        
         preResult = columna_item(columna)
         result = {
-            "Fe1Long1" : preResult["LongTotal"],
-            "Fe2Long1" : preResult["LongTotal"],
-            "Fe3Long1" : preResult["LongTotal"],
-            "Fe1Long2" : 0,
-            "Fe2Long2" : 0,
-            "Fe3Long2" : 0,
-            "Fe1Long1Cantidad" : preResult["f1Bar"],
-            "Fe2Long1Cantidad" : preResult["f2Bar"],
-            "Fe3Long1Cantidad" : preResult["f3Bar"],
-            "Fe1Long2Cantidad" : 0,
-            "Fe2Long2Cantidad" : 0,
-            "Fe3Long2Cantidad" : 0
+            "Fe1Long1" : preResult["LargoAcero1"],
+            "Fe2Long1" : preResult["LargoAcero2"],
+            "Fe3Long1" : preResult["LongEstribo"]
         }
         insertOneItem(item, preResult)
 
     if item.tipo == 'zapata':
-        zapata = CalculoPrimerPiso()
+        zapata = Zapata()
         zapata.cant = item.cantidadRepeticiones
         zapata.Fe1 = item.acero1Cantidad
-        zapata.Fe2 = 0
-        zapata.Fe3 = 0
-        zapata.Long1 = item.m1
-        zapata.Long2 = item.m2
-        zapata.Long3 = item.m3
-        zapata.Long4 = item.m4
-        zapata.Long5 = item.m5
+        zapata.Long1 = item.m3
+        zapata.Long2 = item.m4
+        zapata.Long3 = item.m5
+        zapata.Long4 = item.m6
+        zapata.Long5 = item.m7
 
         preResult = zapata_item(zapata)
 
@@ -267,8 +288,49 @@ def oneCalculo(item: OneItem):
         }
         insertOneItem(item, preResult)
 
-    return result
+    if item.tipo == 'vigas':
+        viga = Viga()
+        viga.fe1 = item.acero1Cantidad
+        viga.fe2 = item.acero2Cantidad
+        viga.Long1 = item.m1
+        viga.Long2 = item.m2
+        viga.Long3 = item.m3
+        viga.Long4 = item.m4
+        viga.Long5 = item.m5
+        viga.Long6 = item.m6
+        
+        viga.secciones = item.secciones
 
+        viga.luces = item.luces
+
+        viga.e1C = item.e1C
+        viga.e2C = item.e2C
+        viga.e3C = item.e3C
+        viga.eResto = item.eResto
+        viga.e1S = item.e1S
+        viga.e2S = item.e2S
+        viga.e3S = item.e3S
+        viga.eRestoS = item.eRestoS
+
+        preResult = viga_item(viga)
+
+        result = {
+            "Fe1Long1" : preResult["piezasL"],
+            "Fe2Long1" : 0,
+            "Fe3Long1" : 0,
+            "Fe1Long2" : preResult["piezasA"],
+            "Fe2Long2" : 0,
+            "Fe3Long2" : 0,
+            "Fe1Long1Cantidad" : preResult["cantidadPiezasLTotal"],
+            "Fe2Long1Cantidad" : 0,
+            "Fe3Long1Cantidad" : 0,
+            "Fe1Long2Cantidad" : preResult["cantidadPiezasATotal"],
+            "Fe2Long2Cantidad" : 0,
+            "Fe3Long2Cantidad" : 0
+        }
+        insertOneItem(item, preResult)
+
+    return result
 
 @app.post("/calculo/optimo")
 def optimoCalculos(OptiItem: OptimoItem):
@@ -353,33 +415,6 @@ def optimoCalculos(OptiItem: OptimoItem):
         })
 
     return resultFinal
-    
-@app.post("/calculo/all")
-def allCalculos(allItems: calculoAll):
-    resultadoColumna = []
-    for columna in allItems.columna:
-        resultadoColumna.append( columna_item(columna) )
-
-    resultadoZapata = []
-    for zapata in allItems.zapata:
-        resultadoZapata.append( zapata_item(zapata) )
-
-    resultadoViga = []
-    for viga in allItems.viga:
-        resultadoViga.append( viga_item(viga) )    
-
-    resultadoEstribo = []
-    for estribo in allItems.estribo:
-        resultadoEstribo.append( estribos_item(estribo) )    
-
-    result = {
-        "columnas" : resultadoColumna,
-        "zapata" : resultadoZapata,
-        "viga" : resultadoViga,
-        "estribo" : resultadoEstribo
-    }   
-
-    return result
 
 def insertOneItem(item: OneItem, preResult):
 
@@ -393,22 +428,12 @@ def insertOneItem(item: OneItem, preResult):
         print(sql)
         mycursor.execute(sql)
 
-    sql = "INSERT INTO oneitem (user, cotizacion, ibobjecto, tipo, cantidadRepeticiones, acero1Tipo, acero1Cantidad, acero2Tipo, acero2Cantidad, m1, m2, m3, m4, m5, jsonRequest, jsonResponse) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    sql = "INSERT INTO oneitem (user, cotizacion, ibobjecto, tipo, jsonRequest, jsonResponse) VALUES (%s, %s, %s, %s, %s, %s)"
     val = ( 
         item.user,
         item.cotizacion,
         item.ibobjecto,
         item.tipo,
-        item.cantidadRepeticiones,
-        item.acero1Tipo,
-        item.acero1Cantidad, 
-        item.acero2Tipo,
-        item.acero2Cantidad,
-        item.m1,
-        item.m2,
-        item.m3,
-        item.m4,
-        item.m5,
         json.dumps(item.dict()),
         json.dumps(preResult) )
 
