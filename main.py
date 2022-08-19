@@ -347,8 +347,8 @@ def optimoCalculos(OptiItem: OptimoItem):
     tablas = {}
 
     for c in myresults:
-        request = json.loads(c[14])
-        response = json.loads(c[15])
+        request = json.loads(c[4])
+        response = json.loads(c[5])
 
 
         if(request["tipo"] == "columna"):
@@ -397,13 +397,6 @@ def optimoCalculos(OptiItem: OptimoItem):
             else:
                 cant = tablas.get( str(request["aceroETipo"]) )[ response["FeELong"] ]
                 tablas.get( str(request["aceroETipo"]) )[ response["FeELong"] ] = response["TotalEstribos"] + cant
-
-            
-            if tablas.get( str(request["acero1Tipo"]) ).get( response["piezasA"] ) == None :
-                tablas.get( str(request["acero1Tipo"]) )[ response["piezasA"] ] = response["cantidadPiezasATotal"]
-            else:
-                cant = tablas.get( str(request["acero1Tipo"]) )[ response["piezasA"] ]
-                tablas.get( str(request["acero1Tipo"]) )[ response["piezasA"] ] = response["cantidadPiezasATotal"] + cant
         
     resultFinal = []
     for keytabla in tablas.keys():
