@@ -225,6 +225,9 @@ def viga_item(item: Viga):
 
 @app.post("/calculo/one")
 def oneCalculo(item: OneItem):
+    print("--------")
+    print(item)
+    print("--------")
     result = {}
     if item.tipo == 'columna':
         columna = Columna()
