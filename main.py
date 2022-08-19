@@ -347,28 +347,27 @@ def optimoCalculos(OptiItem: OptimoItem):
     tablas = {}
 
     for c in myresults:
-        #print(c)
         request = json.loads(c[14])
         response = json.loads(c[15])
-        #print(request)
-        #print(response)
+
+
         if(request["tipo"] == "columna"):
 
             if(tablas.get( str(request["acero1Tipo"]) ) == None):
                 tablas[ str(request["acero1Tipo"] ) ] = {} 
-            if tablas.get( str(request["acero1Tipo"]) ).get( response["LongTotal"] ) == None :
-                tablas.get( str(request["acero1Tipo"]) )[ response["LongTotal"] ] = response["f1Bar"]
+            if tablas.get( str(request["acero1Tipo"]) ).get( response["LargoAcero1"] ) == None :
+                tablas.get( str(request["acero1Tipo"]) )[ response["LargoAcero1"] ] = response["cantidadAcero1Total"]
             else:
                 cant = tablas.get( str(request["acero1Tipo"]) )[ response["LongTotal"] ]
-                tablas.get( str(request["acero1Tipo"]) )[ response["LongTotal"] ] = response["f1Bar"] + cant
+                tablas.get( str(request["acero1Tipo"]) )[ response["LongTotal"] ] = response["cantidadAcero1Total"] + cant
 
             if(tablas.get(str(request["acero2Tipo"])) == None):
                 tablas[ str(request["acero2Tipo"] ) ] = {} 
-            if tablas.get( str(request["acero2Tipo"]) ).get( response["LongTotal"] ) == None :
-                tablas.get( str(request["acero2Tipo"]) )[ response["LongTotal"] ] = response["f2Bar"]
+            if tablas.get( str(request["acero2Tipo"]) ).get( response["LargoAcero2"] ) == None :
+                tablas.get( str(request["acero2Tipo"]) )[ response["LargoAcero2"] ] = response["cantidadAcero2Total"]
             else:
-                cant = tablas.get( str(request["acero2Tipo"]) )[ response["LongTotal"] ]
-                tablas.get( str(request["acero2Tipo"]) )[ response["LongTotal"] ] = response["f2Bar"] + cant
+                cant = tablas.get( str(request["acero2Tipo"]) )[ response["LargoAcero2"] ]
+                tablas.get( str(request["acero2Tipo"]) )[ response["LargoAcero2"] ] = response["cantidadAcero2Total"] + cant
 
 
         if(request["tipo"] == "zapata"):
@@ -387,7 +386,25 @@ def optimoCalculos(OptiItem: OptimoItem):
             else:
                 cant = tablas.get( str(request["acero1Tipo"]) )[ response["piezasA"] ]
                 tablas.get( str(request["acero1Tipo"]) )[ response["piezasA"] ] = response["cantidadPiezasATotal"] + cant
-                
+
+
+        if(request["tipo"] == "vigas"):     
+            if(tablas.get( str(request["aceroETipo"]) ) == None):
+                tablas[ str(request["aceroETipo"] ) ] = {} 
+            
+            if tablas.get( str(request["aceroETipo"]) ).get( response["FeELong"] ) == None :
+                tablas.get( str(request["aceroETipo"]) )[ response["FeELong"] ] = response["TotalEstribos"]
+            else:
+                cant = tablas.get( str(request["aceroETipo"]) )[ response["FeELong"] ]
+                tablas.get( str(request["aceroETipo"]) )[ response["FeELong"] ] = response["TotalEstribos"] + cant
+
+            
+            if tablas.get( str(request["acero1Tipo"]) ).get( response["piezasA"] ) == None :
+                tablas.get( str(request["acero1Tipo"]) )[ response["piezasA"] ] = response["cantidadPiezasATotal"]
+            else:
+                cant = tablas.get( str(request["acero1Tipo"]) )[ response["piezasA"] ]
+                tablas.get( str(request["acero1Tipo"]) )[ response["piezasA"] ] = response["cantidadPiezasATotal"] + cant
+        
     resultFinal = []
     for keytabla in tablas.keys():
         measureKeys =tablas.get(keytabla)
