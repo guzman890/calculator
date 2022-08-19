@@ -41,7 +41,6 @@ class Columna(BaseModel):
 
 class Zapata(BaseModel):
     cant: Optional[int]
-    Fe1: Optional[int]
     Long1: Optional[float]
     Long2: Optional[float]
     Long3: Optional[float]
@@ -57,14 +56,14 @@ class Luz(BaseModel):
     lzC: Optional[int]
 
 class Viga(BaseModel):
-    fe1: int
-    fe2: int
-    Long1: float
-    Long2: float
-    Long3: float
-    Long4: float
-    Long5: float
-    Long6: float
+    fe1: Optional[int]
+    fe2: Optional[int]
+    Long1: Optional[float]
+    Long2: Optional[float]
+    Long3: Optional[float]
+    Long4: Optional[float]
+    Long5: Optional[float]
+    Long6: Optional[float]
 
     secciones: List[Seccion] = []
 
@@ -199,7 +198,7 @@ def viga_item(item: Viga):
         seccionRetorno.append({
             "sLong":sLong,
             "SFe1":SFe1,
-            "SFe1":SFe2
+            "SFe2":SFe2
         })
 
     EspCubEstrMedida = (2*((item.e1C*item.e1S)+(item.e2C*item.e2S)+(item.e3C*item.e3S)))
@@ -253,17 +252,26 @@ def oneCalculo(item: OneItem):
         columna.eRestoS = item.eRestoS
         
         preResult = columna_item(columna)
+        seccion=[]
+
+        seccion.append({
+            "sLong":preResult["LargoAcero1"],
+            "SFe1":preResult["cantidadAcero1Total"],
+            "SFe2":preResult["cantidadAcero2Total"]
+        })
         result = {
-            "Fe1Long1" : preResult["LargoAcero1"],
-            "Fe2Long1" : preResult["LargoAcero2"],
-            "Fe3Long1" : preResult["LongEstribo"]
+            "seccion" : seccion,
+            "FeELong" : preResult["LongEstribo"],
+            "FeELongCantidad": preResult["TotalEstrTotal"],
+            "lucesRetorno": [],
         }
+        
+
         insertOneItem(item, preResult)
 
     if item.tipo == 'zapata':
         zapata = Zapata()
         zapata.cant = item.cantidadRepeticiones
-        zapata.Fe1 = item.acero1Cantidad
         zapata.Long1 = item.m3
         zapata.Long2 = item.m4
         zapata.Long3 = item.m5
@@ -271,21 +279,25 @@ def oneCalculo(item: OneItem):
         zapata.Long5 = item.m7
 
         preResult = zapata_item(zapata)
+        seccion = []
+        seccion.append({
+            "sLong":preResult["piezasL"],
+            "SFe1":preResult["cantidadPiezasLTotal"],
+            "SFe2":0
+        })
+        seccion.append({
+            "sLong":preResult["piezasA"],
+            "SFe1":preResult["cantidadPiezasATotal"],
+            "SFe2":0
+        })
 
         result = {
-            "Fe1Long1" : preResult["piezasL"],
-            "Fe2Long1" : 0,
-            "Fe3Long1" : 0,
-            "Fe1Long2" : preResult["piezasA"],
-            "Fe2Long2" : 0,
-            "Fe3Long2" : 0,
-            "Fe1Long1Cantidad" : preResult["cantidadPiezasLTotal"],
-            "Fe2Long1Cantidad" : 0,
-            "Fe3Long1Cantidad" : 0,
-            "Fe1Long2Cantidad" : preResult["cantidadPiezasATotal"],
-            "Fe2Long2Cantidad" : 0,
-            "Fe3Long2Cantidad" : 0
+            "FeELong" : 0,
+            "FeELongCantidad": 0,
+            "seccion" : seccion,
+            "lucesRetorno": [],
         }
+
         insertOneItem(item, preResult)
 
     if item.tipo == 'vigas':
@@ -296,8 +308,8 @@ def oneCalculo(item: OneItem):
         viga.Long2 = item.m2
         viga.Long3 = item.m3
         viga.Long4 = item.m4
-        viga.Long5 = item.m5
-        viga.Long6 = item.m6
+        viga.Long5 = item.m8
+        viga.Long6 = item.m9
         
         viga.secciones = item.secciones
 
@@ -315,18 +327,10 @@ def oneCalculo(item: OneItem):
         preResult = viga_item(viga)
 
         result = {
-            "Fe1Long1" : preResult["piezasL"],
-            "Fe2Long1" : 0,
-            "Fe3Long1" : 0,
-            "Fe1Long2" : preResult["piezasA"],
-            "Fe2Long2" : 0,
-            "Fe3Long2" : 0,
-            "Fe1Long1Cantidad" : preResult["cantidadPiezasLTotal"],
-            "Fe2Long1Cantidad" : 0,
-            "Fe3Long1Cantidad" : 0,
-            "Fe1Long2Cantidad" : preResult["cantidadPiezasATotal"],
-            "Fe2Long2Cantidad" : 0,
-            "Fe3Long2Cantidad" : 0
+            "FeELong" : preResult["FeELong"],
+            "FeELongCantidad" : preResult["TotalEstribos"],
+            "seccion": preResult["seccion"],
+            "lucesRetorno": preResult["lucesRetorno"],
         }
         insertOneItem(item, preResult)
 
