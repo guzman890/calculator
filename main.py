@@ -361,8 +361,8 @@ def optimoCalculos(OptiItem: OptimoItem):
             if tablas.get( str(request["acero1Tipo"]) ).get( response["LargoAcero1"] ) == None :
                 tablas.get( str(request["acero1Tipo"]) )[ response["LargoAcero1"] ] = response["cantidadAcero1Total"]
             else:
-                cant = tablas.get( str(request["acero1Tipo"]) )[ response["LongTotal"] ]
-                tablas.get( str(request["acero1Tipo"]) )[ response["LongTotal"] ] = response["cantidadAcero1Total"] + cant
+                cant = tablas.get( str(request["acero1Tipo"]) )[ response["LargoAcero1"] ]
+                tablas.get( str(request["acero1Tipo"]) )[ response["LargoAcero1"] ] = response["cantidadAcero1Total"] + cant
 
             if(tablas.get(str(request["acero2Tipo"])) == None):
                 tablas[ str(request["acero2Tipo"] ) ] = {} 
