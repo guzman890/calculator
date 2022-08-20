@@ -303,7 +303,7 @@ def oneCalculo(item: OneItem):
 
         insertOneItem(item, preResult)
 
-    if item.tipo == 'vigas':
+    if item.tipo == 'viga':
         viga = Viga()
         viga.fe1 = item.acero1Cantidad
         viga.fe2 = item.acero2Cantidad
